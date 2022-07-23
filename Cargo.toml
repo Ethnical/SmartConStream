@@ -1,0 +1,15 @@
+[package]
+name = "smart_con_stream"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ethers = { git = "https://github.com/gakonst/ethers-rs", default-features = false, features = ["solc-full"] }
+regex = "1.6.0"
+reqwest = "0.11.11"
+scraper = "0.13.0"
+soup = "0.5.1"
+table-extract = "0.2.2"
+tokio = "1.20.0"
