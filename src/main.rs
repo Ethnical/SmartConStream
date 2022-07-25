@@ -1,25 +1,23 @@
+use chrono::Utc;
 use regex::Regex;
-use std::{f32::consts::E, thread, time};
-
+use std::{thread, time};
 fn main() {
-    req2();
-
-    //tokio::runtime::Runtime::new().unwrap().block_on(req());
+    display_new_entries();
 }
 
-fn req2() {
+fn display_new_entries() {
     let mut address_last_etherscan = "".to_string();
-    while (true) {
+    loop {
         let response = reqwest::blocking::get("https://etherscan.io/contractsVerified")
             .unwrap()
             .text()
             .unwrap();
-        let mut tab = parse_tr_to_vec(&response);
+        let tab = parse_tr_to_vec(&response);
         let mut i = 0;
-        while (address_last_etherscan != tab[i][0]) {
+        while address_last_etherscan != tab[i][0] {
             println!(
-            "Address : {}\nContract Name : {}\nCompiler : {}\nVersion : {}\nBalance : {}\ntxns => {}\nVerified date : {}\nSource_code : {}\n-------------------------------------------------------------",
-            tab[i][0], tab[i][1], tab[i][2],  tab[i][3],  tab[i][4],  tab[i][5],"N/A",format!("https://etherscan.io/address/{}#code",tab[i][0])
+            "Address : {}\nContract Name : {}\nCompiler : {}\nVersion : {}\nBalance : {}\ntxns => {}\nDate Update : {}\nSource_code : {}\n-------------------------------------------------------------",
+            tab[i][0], tab[i][1], tab[i][2],  tab[i][3],  tab[i][4],  tab[i][5],Utc::now().format("%d-%m-%Y %H:%M:%S"),format!("https://etherscan.io/address/{}#code",tab[i][0])
             );
 
             //address_last_etherscan = tab[0][0].clone();
@@ -32,9 +30,6 @@ fn req2() {
         address_last_etherscan = tab[0][0].clone();
         thread::sleep(time::Duration::from_secs(5));
     }
-
-    //let vec = tr.collect::<Vec<_>>();
-    //println!("{:?}", vec[0]);
 }
 
 fn parse_tr_to_vec(tr: &str) -> Vec<Vec<String>> {
@@ -73,21 +68,6 @@ fn parse_tr_to_vec(tr: &str) -> Vec<Vec<String>> {
         ]);
     }
     smart_contract_tab
-
-    /*
-    let document = scraper::Html::parse_document(html);
-
-    let a_selector = scraper::Selector::parse("a").unwrap();
-    let address = document.select(&a_selector).next().unwrap();
-    let td: Vec<&str> = html.split("td>").collect();
-
-    //println!("{:?}", re.find(html).unwrap().end());
-    let soup = Soup::new(html);
-    let b = soup.tag("td").find().expect("Couldn't find tag 'b'");
-    */
-    //let x: Vec<&str> = tr.split("data-toggle=\"tooltip\">").collect();
-    //println!("{:?}", x.display());
-    // println()
 }
 fn get_source_code(address: &str) -> String {
     let link = format!("https://etherscan.io/contractdiffchecker?a1={}", address);
